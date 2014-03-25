@@ -14,7 +14,6 @@ import (
  * @Author: Timothy Yandl (University of Portland)
  * @Date: 8 October 2013
 **/
-
 func main() {
 	//log.Println("Starting...")
 	go func() {
@@ -44,7 +43,11 @@ func handleUDP() error {
 	if err != nil {
 		return err
 	}
-	buf := make([]byte, 1024)
+	// max theoretical UDP packet size: 65535
+	// minus headers: 65507 (this is the max I could send on localhost)
+	// Ethernet MTU: 1500 (unless jumbo frames are enabled)
+	// If problems occure on Windows due to malformed time requests, set this higher.
+	buf := make([]byte, 1500)
 	// wait for time requests
 	for {
 		if _, r_addr, err := conn.ReadFromUDP(buf); err == nil {
