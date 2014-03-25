@@ -41,14 +41,13 @@ func handleUDP() error {
 		return err
 	}
 	defer conn.Close()
-	// we don't care about the datagram (it should be empty), so set buffer to 0
-	err = conn.SetReadBuffer(0)
 	if err != nil {
 		return err
 	}
+	buf := make([]byte, 1024)
 	// wait for time requests
 	for {
-		if _, r_addr, err := conn.ReadFromUDP(nil); err == nil {
+		if _, r_addr, err := conn.ReadFromUDP(buf); err == nil {
 			if t, err := getTime(); err == nil {
 				conn.WriteToUDP(t, r_addr)
 			}
