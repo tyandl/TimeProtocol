@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"bytes"
 	"encoding/binary"
+	"strconv"
 	"time"
 	"os"
 )
 
 func main() {
-	if len(os.Args) != 3 {
+	if !(len(os.Args) == 3 || len(os.Args) == 4) {
 		fmt.Printf( "Usage: %s <IP Address> <Port>\n", os.Args[0] )
 		return
 	}
@@ -28,9 +29,18 @@ func main() {
 	}
 	
 	// send a blank packet.
-	_, err = conn.Write([]byte(""))
-	if err != nil {
-		fmt.Println("Unable to send packet: ", err)
+	if len(os.Args) == 3 {
+		_, err = conn.Write([]byte(""))
+		if err != nil {
+			fmt.Println("Unable to send packet: ", err)
+		}
+	} else {
+		l, _ := strconv.Atoi(os.Args[3])
+		out := make([]byte, l)
+		_, err = conn.Write(out)
+		if err != nil {
+			fmt.Println("Unable to send packet: ", err)
+		}
 	}
 	
 	// read response
