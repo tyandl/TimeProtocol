@@ -2,6 +2,29 @@ TimeProtocol is a simple but complete implementation of RFC868. This should not 
 
 TimeProtocol implements both TCP and UDP communication and was writen in GO.
 
-To run as a service in Windows: I used http://support.microsoft.com/kb/137890 to make the program run as a service. in the event that the link stops working, read Daemonizing.txt
+DOCKER
+------
+Build and run with docker compose (maps host port 37 -> the container's
+unprivileged internal port, so the container runs fully as a non-root user):
+
+    docker compose up --build -d
+
+Or manually:
+
+    docker build -t timeprotocol .
+    docker run -d -p 37:8037/tcp -p 37:8037/udp timeprotocol
+
+The listen port inside the container can be changed via the
+TIMEPROTOCOL_PORT environment variable (default 8037).
+
+SECURITY NOTES
+--------------
+RFC 868 has no authentication and the server replies to any source address,
+so it can be used as a (low-amplification) UDP reflector if exposed to the
+open internet. If you publish this port publicly, restrict it with a
+firewall to trusted networks rather than exposing it to 0.0.0.0 broadly.
+The RFC 868 32-bit seconds-since-1900 timestamp also rolls over in February
+2036 -- that is a limitation of the protocol itself, not this
+implementation.
 
 

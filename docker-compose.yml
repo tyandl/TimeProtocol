@@ -1,0 +1,17 @@
+services:
+  timeprotocol:
+    build: .
+    image: timeprotocol:latest
+    restart: unless-stopped
+    ports:
+      # host:container — container listens unprivileged, host still exposes
+      # the standard RFC 868 port 37. Restrict this to trusted networks if
+      # the host is internet-facing: the protocol has no auth/rate-limiting
+      # and can be abused as a spoofed-source UDP reflector.
+      - "37:8037/tcp"
+      - "37:8037/udp"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
